@@ -5,17 +5,18 @@
 
 class Point2D {
     private:
-        double x;
-        double y;
+        double x_;
+        double y_;
 
     public:
+        Point2D();
         Point2D(double x, double y);
-        double getX();
-        void setX(double x);
-        double getY();
-        void setY(double y);
-        double distance(Point2D& c);
-        void render();
+        double get_x() const;
+        void set_x(double x);
+        double get_y() const;
+        void set_y(double y);
+        double Distance(Point2D& c);
+        void Render();
         Point2D& operator+=(const Point2D& point);
         Point2D& operator-=(const Point2D& point);
 };

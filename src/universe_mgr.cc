@@ -74,8 +74,8 @@ static void universe_mgr_scroll_callback(GLFWwindow* window, double xoffset, dou
 
 static void universe_mgr_resize_callback(GLFWwindow* window, int width, int height)
 {
-    universe_mgr.size->setX(width);
-    universe_mgr.size->setY(height);
+    universe_mgr.size->set_x(width);
+    universe_mgr.size->set_y(height);
     /* Setup our viewport to be the entire size of the window. */
     glViewport(0, 0, (GLsizei)width, (GLsizei)height);
     /* Select the projection matrix. */
@@ -94,7 +94,7 @@ static GLFWwindow *universe_mgr_create_window(const char *name, Point2D *size)
     if (!glfwInit())
         return NULL;
     /* Creating a window and context. */
-    window = glfwCreateWindow(size->getX(), size->getY(), name, NULL, NULL);
+    window = glfwCreateWindow(size->get_x(), size->get_y(), name, NULL, NULL);
     if (window == NULL) {
         glfwTerminate();
         return NULL;
@@ -111,12 +111,12 @@ static GLFWwindow *universe_mgr_create_window(const char *name, Point2D *size)
 static void universe_mgr_gl_init(Point2D *size)
 {
     /* Setup our viewport to be the entire size of the window. */
-    glViewport(0, 0, (GLsizei)size->getX(), (GLsizei)size->getY());
+    glViewport(0, 0, (GLsizei)size->get_x(), (GLsizei)size->get_y());
     /* Change to the projection matrix, reset the matrix and set up orthagonal projection. */
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     /* Paramters: left, right, bottom, top, near, far. */
-    glOrtho(0.0f, size->getX(), 0.0f, size->getY(), 0.0f, 1.0f);
+    glOrtho(0.0f, size->get_x(), 0.0f, size->get_y(), 0.0f, 1.0f);
     /* ----- OpenGL settings ----- */
     /* Enable (gouraud) shading. */
     glEnable(GL_SMOOTH);
@@ -145,14 +145,8 @@ int universe_mgr_init(const char *name, int sizeX, int sizeY)
     if (universe_mgr.window == NULL) {
         return -1;
     }
-#if 0
-    /* Create game instance. */
-    universe_mgr.game = game_create(universe_mgr.size);
-    if (universe_mgr.game == NULL) {
-        universe_mgr_terminate();
-        return -1;
-    }
-#endif
+    /* Create universe. */
+    universe_mgr.universe = new Universe();
     /* Create a pixmap font from a TrueType file. */
     universe_mgr.font = new FTGLPixmapFont("/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf");
     if (universe_mgr.font->Error()) {
@@ -172,7 +166,7 @@ void universe_mgr_terminate(void)
         delete universe_mgr.font;
     }
     if (universe_mgr.universe) {
-        //game_destroy(universe_mgr.game);
+        delete universe_mgr.universe;
     }
     if (universe_mgr.window) {
         glfwDestroyWindow(universe_mgr.window);
@@ -227,9 +221,9 @@ static void universe_mgr_render(void)
     /* Reset the matrix. */
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-#if 0
     /* Draw stuff. */
-    game_render(universe_mgr.game);
+    universe_mgr.universe->Render();
+#if 0
     universe_mgr_draw_info(&universe_mgr);
 #endif
     /* Do other glfw things. */

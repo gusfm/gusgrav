@@ -17,6 +17,6 @@ TEST_F(Point2DTest, basic) {
 }
 
 TEST_F(Point2DTest, methods) {
-    EXPECT_EQ(0.0, point_->getX());
-    EXPECT_EQ(0.0, point_->getY());
+    EXPECT_EQ(0.0, point_->get_x());
+    EXPECT_EQ(0.0, point_->get_y());
 }
