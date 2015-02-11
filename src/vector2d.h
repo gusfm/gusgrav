@@ -3,13 +3,17 @@
 
 #include "point2d.h"
 
-class Vector2D {
+class Vector2d : public Point2d {
    public:
-    Vector2D();
-    Vector2D(double x, double y);
+    Vector2d();
+    Vector2d(const Point2d &point);
+    void set(double x, double y);
+    void Render(Point2d translation);
     void rotate(double rad);
-   private:
-    Point2D direction_;
+    double dot(const Vector2d &v);
+    Vector2d& operator*=(const double s);
 };
+
+Vector2d operator*(Vector2d lhs, const double s);
 
 #endif /* GUSGRAV_SRC_VECTOR2D_H_ */

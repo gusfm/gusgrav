@@ -2,16 +2,19 @@
 #define GUSGRAV_SRC_UNIVERSE_H_
 
 #include <list>
-#include "particle.h"
+#include "body.h"
 
 class Universe {
    public:
     Universe();
     ~Universe();
     void Render();
+    void Process();
    private:
-    void CreateRandomParticlesSameMass(int number);
-    std::list<Particle *> particle_list_;
+    void CreateRandomBodiesSameMass(int number);
+    void CalculateBodyAcceleration(Body *body);
+    void CalculateNBodyAcceleration();
+    std::list<Body *> body_list_;
 };
 
 

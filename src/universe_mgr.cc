@@ -13,7 +13,7 @@
 
 // TODO: This file should probably be all c
 typedef struct {
-    Point2D *size;
+    Point2d *size;
     Universe *universe;
     FTGLPixmapFont *font;
     GLFWwindow *window;
@@ -85,7 +85,7 @@ static void universe_mgr_resize_callback(GLFWwindow* window, int width, int heig
     glOrtho(0.0f, width, 0.0f, height, 0.0f, 1.0f);
 }
 
-static GLFWwindow *universe_mgr_create_window(const char *name, Point2D *size)
+static GLFWwindow *universe_mgr_create_window(const char *name, Point2d *size)
 {
     GLFWwindow *window;
     /* Set an error callback. */
@@ -108,7 +108,7 @@ static GLFWwindow *universe_mgr_create_window(const char *name, Point2D *size)
     return window;
 }
 
-static void universe_mgr_gl_init(Point2D *size)
+static void universe_mgr_gl_init(Point2d *size)
 {
     /* Setup our viewport to be the entire size of the window. */
     glViewport(0, 0, (GLsizei)size->get_x(), (GLsizei)size->get_y());
@@ -132,14 +132,14 @@ static void universe_mgr_gl_init(Point2D *size)
     /* Enable anti-aliasing on lines. */
     glEnable(GL_LINE_SMOOTH);
     /* Set a 'chunky' point size. */
-    glPointSize(5.0f);
+    glPointSize(1.0f);
     /* Enable anti-aliasing on points. */
     glEnable(GL_POINT_SMOOTH);
 }
 
 int universe_mgr_init(const char *name, int sizeX, int sizeY)
 {
-    universe_mgr.size = new Point2D(sizeX, sizeY);
+    universe_mgr.size = new Point2d(sizeX, sizeY);
     /* Create window. */
     universe_mgr.window = universe_mgr_create_window(name, universe_mgr.size);
     if (universe_mgr.window == NULL) {
@@ -240,7 +240,8 @@ void universe_mgr_main_loop(void)
     while (!glfwWindowShouldClose(universe_mgr.window)) {
         universe_mgr_render();
         if (loop_cnt++ % 10 == 0) {
-            //game_process(universe_mgr.game);
+            std::cout << "Processing" << std::endl;
+            universe_mgr.universe->Process();
         }
         nanosleep(&reqtime, NULL);
     }
