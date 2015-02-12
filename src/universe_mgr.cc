@@ -34,25 +34,11 @@ static void universe_mgr_key_callback(GLFWwindow* window, int key, int scancode,
             glfwSetWindowShouldClose(window, GL_TRUE);
             break;
 
-#if 0
-        case GLFW_KEY_E:
-            /* Enable energy button. */
+        case GLFW_KEY_A:
+            /* Enable acceleration vector rendering. */
             if (action == 1)
-                universe_mgr.button_bmp ^= GM_ENERGY_BTN;
+                universe_mgr.universe->toggle_render_acceleration();
             break;
-
-        case GLFW_KEY_G:
-            /* Enable genome button. */
-            if (action == 1)
-                universe_mgr.button_bmp ^= GM_GENOME_BTN;
-            break;
-
-        case GLFW_KEY_S:
-            /* Enable speed button. */
-            if (action == 1)
-                universe_mgr.button_bmp ^= GM_SPEED_BTN;
-            break;
-#endif
 
         default:
             break;
@@ -128,7 +114,7 @@ static void universe_mgr_gl_init(Point2d *size)
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 #endif
     /* Set a 'chunky' line width. */
-    glLineWidth(5.0f);
+    glLineWidth(1.0f);
     /* Enable anti-aliasing on lines. */
     glEnable(GL_LINE_SMOOTH);
     /* Set a 'chunky' point size. */
@@ -188,14 +174,6 @@ static void universe_mgr_render_cell_count(universe_mgr_t *universe_mgr)
     glRasterPos2f(universe_mgr->size.x - strlen(str) * 10, universe_mgr->size.y - GM_FONT_SIZE);
     universe_mgr.font->Render(str);
 }
-
-static void universe_mgr_render_cell_energy(universe_mgr_t *universe_mgr)
-{
-    char str[100];
-    game_get_cell_energy_str(universe_mgr->game, str,  sizeof(str));
-    glRasterPos2f(0, 3);
-    universe_mgr.font->Render(str);
-}
 #endif
 
 #if 0
@@ -236,11 +214,11 @@ void universe_mgr_main_loop(void)
     int loop_cnt = 0;
     struct timespec reqtime;
     reqtime.tv_sec = 0;
-    reqtime.tv_nsec = 100000000; /* 100 ms */
+    reqtime.tv_nsec = 1000000; /* 1 ms */
     while (!glfwWindowShouldClose(universe_mgr.window)) {
         universe_mgr_render();
         if (loop_cnt++ % 10 == 0) {
-            std::cout << "Processing" << std::endl;
+            //std::cout << "Processing" << std::endl;
             universe_mgr.universe->Process();
         }
         nanosleep(&reqtime, NULL);

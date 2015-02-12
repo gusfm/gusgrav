@@ -9,14 +9,19 @@ class Body {
     Body(const Point2d &position, const Vector2d &velocity, unsigned int mass);
     ~Body();
     void Render();
+    void RenderAcceleration();
     unsigned int get_mass() const;
     const Point2d &get_velocity();
     void CalculateAcceleration(const Body *j);
     void ClearAcceleration();
+    void ProcessAcceleration();
+    void ProcessAccelerationRender(double scale);
+    double Distance(Body &body);
    protected:
     Point2d position_;
     Vector2d velocity_;
     Vector2d acceleration_;
+    Vector2d acceleration_render_;
     unsigned int mass_;
 };
 

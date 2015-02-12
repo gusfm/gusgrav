@@ -8,10 +8,14 @@ class Vector2d : public Point2d {
     Vector2d();
     Vector2d(const Point2d &point);
     void set(double x, double y);
-    void Render(Point2d translation);
+    void translate(const Point2d &translation);
+    void Render();
     void rotate(double rad);
     double dot(const Vector2d &v);
     Vector2d& operator*=(const double s);
+   private:
+    Point2d translation_p0_;
+    Point2d translation_p1_;
 };
 
 Vector2d operator*(Vector2d lhs, const double s);

@@ -37,7 +37,12 @@ static void DrawCircle(const Point2d &p, float r, int num_segments)
 void Body::Render()
 {
     DrawCircle(position_, mass_, 10);
-    acceleration_.Render(position_);
+}
+
+void Body::RenderAcceleration()
+{
+    glColor3f(1.0, 0.0, 0.0);
+    acceleration_render_.Render();
 }
 
 unsigned int Body::get_mass() const
@@ -68,4 +73,22 @@ void Body::CalculateAcceleration(const Body *j)
     double s = j->get_mass() * invDistCube;
     // a_i =  a_i + s * r_ij [6 FLOPS]
     acceleration_ += r_ij * s;
+}
+
+void Body::ProcessAccelerationRender(double scale)
+{
+    acceleration_render_ = acceleration_ * scale;
+    acceleration_render_.translate(position_);
+}
+
+void Body::ProcessAcceleration()
+{
+    velocity_ += acceleration_;
+    position_ += velocity_;
+    //std::cout << "v=" << *this << " t0=" << translation_p0_ << " t1=" << translation_p1_ << std::endl;
+}
+
+double Body::Distance(Body &body)
+{
+    return position_.Distance(body.position_);
 }
