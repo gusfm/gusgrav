@@ -13,11 +13,13 @@ class Vector2d : public Point2d {
     void rotate(double rad);
     double dot(const Vector2d &v);
     Vector2d& operator*=(const double s);
+    Vector2d& operator/=(const double s);
    private:
     Point2d translation_p0_;
     Point2d translation_p1_;
 };
 
 Vector2d operator*(Vector2d lhs, const double s);
+Vector2d operator/(Vector2d lhs, const double s);
 
 #endif /* GUSGRAV_SRC_VECTOR2D_H_ */

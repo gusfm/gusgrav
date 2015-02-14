@@ -6,17 +6,22 @@
 
 class Universe {
    public:
-    Universe();
+    Universe(Point2d &size);
     ~Universe();
     void Render();
     void Process();
     void toggle_render_acceleration();
+    unsigned int get_num_bodies();
    private:
     void CreateRandomBodiesSameMass(int number);
     void CalculateBodyAcceleration(Body *body);
     void CalculateNBodyAcceleration();
+    void CheckCloseBodies(Body *body);
+    void CheckCloseBodiesAll();
+    Point2d size_;
+    bool render_info_;
+    bool merge_bodies_;
     std::list<Body *> body_list_;
-    bool render_acceleration_;
 };
 
 

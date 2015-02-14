@@ -74,6 +74,18 @@ Vector2d operator*(Vector2d lhs, const double s)
     return lhs;
 }
 
+Vector2d& Vector2d::operator/=(const double s)
+{
+    Point2d::operator/=(s);
+    return *this;
+}
+
+Vector2d operator/(Vector2d lhs, const double s)
+{
+    lhs /= s;
+    return lhs;
+}
+
 double Vector2d::dot(const Vector2d &v)
 {
     return get_x() * v.get_x() + get_y() * v.get_y();

@@ -21,11 +21,13 @@ class Point2d {
     Point2d& operator+=(const Point2d& point);
     Point2d& operator-=(const Point2d& point);
     Point2d& operator*=(const double s);
+    Point2d& operator/=(const double s);
 };
 
 Point2d operator+(Point2d lhs, const Point2d& rhs);
 Point2d operator-(Point2d lhs, const Point2d& rhs);
 Point2d operator*(Point2d lhs, const double s);
+Point2d operator/(Point2d lhs, const double s);
 bool operator==(const Point2d& lhs, const Point2d& rhs);
 std::ostream& operator<<(std::ostream& os, const Point2d& point);
 

@@ -3,21 +3,17 @@
 
 void Universe::CreateRandomBodiesSameMass(int number)
 {
+    srand(time(NULL));
     for (int i = 0; i < number; ++i) {
-        const Point2d pos(i * 20 + 300, 300);
+        const Point2d pos(rand() % (int)size_.get_x(), rand() % (int)size_.get_y());
         const Vector2d vel(Point2d(0, 0));
-        body_list_.push_back(new Body(pos, vel, 1U));
+        body_list_.push_back(new Body(pos, vel, rand() % 10));
     }
-    const Point2d pos(200, 500);
-    const Vector2d vel(Point2d(0, 0));
-    body_list_.push_back(new Body(pos, vel, 100U));
-    const Point2d pos2(500, 100);
-    body_list_.push_back(new Body(pos2, vel, 100U));
 }
 
-Universe::Universe() : render_acceleration_(false)
+Universe::Universe(Point2d &size) : size_(size), render_info_(false), merge_bodies_(true)
 {
-    CreateRandomBodiesSameMass(10);
+    CreateRandomBodiesSameMass(1000);
 }
 
 Universe::~Universe()
@@ -26,17 +22,18 @@ Universe::~Universe()
 
 void Universe::toggle_render_acceleration()
 {
-    render_acceleration_ = !render_acceleration_;
+    render_info_ = !render_info_;
 }
 
 void Universe::Render()
 {
     std::list<Body *>::const_iterator iter;
-    glColor3f(1.0, 1.0, 1.0);
     for (iter = body_list_.begin(); iter != body_list_.end(); iter++) {
+        glColor3f(1.0, 1.0, 1.0);
         (*iter)->Render();
-        if (render_acceleration_)
-            (*iter)->RenderAcceleration();
+        if (render_info_) {
+            (*iter)->RenderInfo();
+        }
     }
 
 }
@@ -50,9 +47,9 @@ void Universe::CalculateBodyAcceleration(Body *body)
             body->CalculateAcceleration(*iter);
     }
     /* First update the position, and than process accel rendering. */
-    body->ProcessAcceleration();
-    if (render_acceleration_)
-        body->ProcessAccelerationRender(10);
+    body->Process();
+    if (render_info_)
+        body->ProcessInfoRender(300);
 }
 
 void Universe::CalculateNBodyAcceleration()
@@ -63,21 +60,35 @@ void Universe::CalculateNBodyAcceleration()
     }
 }
 
-#if 0
-void Universe::CheckClose()
+void Universe::CheckCloseBodies(Body *body)
 {
+    std::list<Body *>::iterator iter;
+    for (iter = body_list_.begin(); iter != body_list_.end(); iter++) {
+        if (*iter != body) {
+            if (body->IsInside(*iter)) {
+                body->Merge(*iter);
+                iter = body_list_.erase(iter);
+            }
+        }
+    }
 }
 
-void Universe::MergeCloseBodies()
+void Universe::CheckCloseBodiesAll()
 {
     std::list<Body *>::const_iterator iter;
     for (iter = body_list_.begin(); iter != body_list_.end(); iter++) {
-        CalculateBodyAcceleration(*iter);
+        CheckCloseBodies(*iter);
     }
 }
-#endif
 
 void Universe::Process()
 {
     CalculateNBodyAcceleration();
+    if (merge_bodies_)
+        CheckCloseBodiesAll();
+}
+
+unsigned int Universe::get_num_bodies()
+{
+    return body_list_.size();
 }

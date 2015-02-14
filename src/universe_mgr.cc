@@ -14,6 +14,8 @@
 // TODO: This file should probably be all c
 typedef struct {
     Point2d *size;
+    double zoom;
+    Point2d zoom_center;
     Universe *universe;
     FTGLPixmapFont *font;
     GLFWwindow *window;
@@ -30,6 +32,7 @@ static void universe_mgr_key_callback(GLFWwindow* window, int key, int scancode,
 {
     switch (key) {
         case GLFW_KEY_ESCAPE:
+        case GLFW_KEY_Q:
             /* Quit. */
             glfwSetWindowShouldClose(window, GL_TRUE);
             break;
@@ -47,15 +50,27 @@ static void universe_mgr_key_callback(GLFWwindow* window, int key, int scancode,
 
 static void universe_mgr_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-#if 0
+    double x, y;
     if (yoffset > 0 && universe_mgr.zoom > 20)
         return;
     if (yoffset < 0 && universe_mgr.zoom < 0)
         return;
-    universe_mgr.zoom += yoffset * 10;
-    glfwGetCursorPos(window, &universe_mgr.zoom_center.x, &universe_mgr.zoom_center.y);
-    printf("(%lf, %lf), zoom=%f\n", universe_mgr.zoom_center.x, universe_mgr.zoom_center.y, universe_mgr.zoom);
-#endif
+    universe_mgr.zoom += yoffset / 10;
+    glfwGetCursorPos(window, &x, &y);
+    universe_mgr.zoom_center.set(x, y);
+    std::cout << "zoom=" << universe_mgr.zoom << " zoom_center=" << universe_mgr.zoom_center << std::endl;
+
+    int width = universe_mgr.size->get_x();
+    int height = universe_mgr.size->get_y();
+    /* Setup our viewport to be the entire size of the window. */
+    glViewport(0, 0, (GLsizei)width, (GLsizei)height);
+    /* Select the projection matrix. */
+    glMatrixMode(GL_PROJECTION);
+    /* Reset the projection matrix. */
+    glLoadIdentity();
+    /* TODO: Fix zoom! */
+    /* Paramters: left, right, bottom, top, near, far. */
+    glOrtho(0.0f, width * universe_mgr.zoom, 0.0f, height * universe_mgr.zoom, -1.0f, 1.0f);
 }
 
 static void universe_mgr_resize_callback(GLFWwindow* window, int width, int height)
@@ -68,7 +83,7 @@ static void universe_mgr_resize_callback(GLFWwindow* window, int width, int heig
     glMatrixMode(GL_PROJECTION);
     /* Reset the projection matrix. */
     glLoadIdentity();
-    glOrtho(0.0f, width, 0.0f, height, 0.0f, 1.0f);
+    glOrtho(0.0f, width, 0.0f, height, -1.0f, 1.0f);
 }
 
 static GLFWwindow *universe_mgr_create_window(const char *name, Point2d *size)
@@ -102,7 +117,7 @@ static void universe_mgr_gl_init(Point2d *size)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     /* Paramters: left, right, bottom, top, near, far. */
-    glOrtho(0.0f, size->get_x(), 0.0f, size->get_y(), 0.0f, 1.0f);
+    glOrtho(0.0f, size->get_x(), 0.0f, size->get_y(), -1.0f, 1.0f);
     /* ----- OpenGL settings ----- */
     /* Enable (gouraud) shading. */
     glEnable(GL_SMOOTH);
@@ -126,13 +141,14 @@ static void universe_mgr_gl_init(Point2d *size)
 int universe_mgr_init(const char *name, int sizeX, int sizeY)
 {
     universe_mgr.size = new Point2d(sizeX, sizeY);
+    universe_mgr.zoom = 1.0L;
     /* Create window. */
     universe_mgr.window = universe_mgr_create_window(name, universe_mgr.size);
     if (universe_mgr.window == NULL) {
         return -1;
     }
     /* Create universe. */
-    universe_mgr.universe = new Universe();
+    universe_mgr.universe = new Universe(*universe_mgr.size);
     /* Create a pixmap font from a TrueType file. */
     universe_mgr.font = new FTGLPixmapFont("/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf");
     if (universe_mgr.font->Error()) {
@@ -160,37 +176,28 @@ void universe_mgr_terminate(void)
     }
 }
 
-#if 0
-static void game_gmr_render_help(universe_mgr_t *universe_mgr)
+static void game_mgr_render_help()
 {
-    glRasterPos2f(0, universe_mgr->size.y - GM_FONT_SIZE);
-    universe_mgr.font->Render("[q] quit game; [e] cell energy; [g] cell genome;");
+    glRasterPos2f(0, universe_mgr.size->get_y() - GM_FONT_SIZE);
+    universe_mgr.font->Render("[q] quit game;");
 }
 
-static void universe_mgr_render_cell_count(universe_mgr_t *universe_mgr)
+static void universe_mgr_render_body_count()
 {
     char str[30];
-    snprintf(str, sizeof(str), "cell count: %u", game_get_cell_count(universe_mgr->game));
-    glRasterPos2f(universe_mgr->size.x - strlen(str) * 10, universe_mgr->size.y - GM_FONT_SIZE);
+    snprintf(str, sizeof(str), "body count: %u", universe_mgr.universe->get_num_bodies());
+    glRasterPos2f(universe_mgr.size->get_x() - strlen(str) * 10, universe_mgr.size->get_y() - GM_FONT_SIZE);
     universe_mgr.font->Render(str);
 }
-#endif
 
-#if 0
-static void universe_mgr_render_info(universe_mgr_t *universe_mgr)
+static void universe_mgr_render_info()
 {
     glPushMatrix();
     glColor3f(1.f, 1.f, 1.f);
-    game_gmr_render_help(universe_mgr);
-    universe_mgr_render_cell_count(universe_mgr);
-
-    if (universe_mgr->button_bmp & GM_ENERGY_BTN) {
-        /* Print the energy of all cells. */
-        universe_mgr_render_cell_energy(universe_mgr);
-    }
+    game_mgr_render_help();
+    universe_mgr_render_body_count();
     glPopMatrix();
 }
-#endif
 
 static void universe_mgr_render(void)
 {
@@ -201,9 +208,7 @@ static void universe_mgr_render(void)
     glLoadIdentity();
     /* Draw stuff. */
     universe_mgr.universe->Render();
-#if 0
-    universe_mgr_draw_info(&universe_mgr);
-#endif
+    universe_mgr_render_info();
     /* Do other glfw things. */
     glfwSwapBuffers(universe_mgr.window);
     glfwPollEvents();

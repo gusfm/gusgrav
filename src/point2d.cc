@@ -62,9 +62,22 @@ Point2d& Point2d::operator*=(const double s)
     return *this;
 }
 
+Point2d& Point2d::operator/=(const double s)
+{
+    x_ /= s;
+    y_ /= s;
+    return *this;
+}
+
 Point2d operator*(Point2d lhs, const double s)
 {
     lhs *= s;
+    return lhs;
+}
+
+Point2d operator/(Point2d lhs, const double s)
+{
+    lhs /= s;
     return lhs;
 }
 
