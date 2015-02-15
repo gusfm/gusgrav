@@ -43,7 +43,7 @@ static void DrawCircle(const Point2d &p, float r, int num_segments)
 
 void Body::Render()
 {
-    DrawCircle(position_, radius_, 2 + radius_);
+    DrawCircle(position_, radius_, 3 + radius_);
 }
 
 void Body::RenderInfo()
