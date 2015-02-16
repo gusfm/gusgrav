@@ -6,7 +6,7 @@
 
 
 Body::Body(const Point2d &position, const Vector2d &velocity, unsigned int mass) :
-    position_(position), velocity_(velocity), acceleration_(Point2d(0, 0)), mass_(mass)
+    position_(position), velocity_(velocity), acceleration_(Point2d(0, 0)), mass_(mass), selected_(false)
 {
     UpdateRadius();
 }
@@ -41,8 +41,24 @@ static void DrawCircle(const Point2d &p, float r, int num_segments)
     glEnd();
 }
 
+void Body::DrawOrbit()
+{
+    if (orbit_points_.size() > 1) {
+        std::list<Point2d>::const_iterator iter;
+        glBegin(GL_LINE_STRIP);
+        for (iter = orbit_points_.begin(); iter != orbit_points_.end(); iter++) {
+            glVertex2f((*iter).get_x(), (*iter).get_y());
+        }
+        glEnd();
+    }
+}
+
 void Body::Render()
 {
+    if (selected_) {
+        glColor3d(128, 0, 128);
+        DrawOrbit();
+    }
     DrawCircle(position_, radius_, 3 + radius_);
 }
 
@@ -96,7 +112,8 @@ void Body::Process()
 {
     velocity_ += acceleration_;
     position_ += velocity_;
-    //std::cout << "v=" << *this << " t0=" << translation_p0_ << " t1=" << translation_p1_ << std::endl;
+    if (selected_)
+        orbit_points_.push_back(Point2d(position_));
 }
 
 double Body::Distance(Body *body)
@@ -113,10 +130,27 @@ void Body::Merge(Body *body)
     UpdateRadius();
 }
 
-bool Body::IsInside(Body *body)
+bool Body::IsInside(Point2d &point)
 {
     /* (p.x - circle.x)^2 + (p.y - circle.y)^2 < circle.radius^2 */
-    double dx = (body->position_.get_x() - position_.get_x());
-    double dy = (body->position_.get_y() - position_.get_y());
+    double dx = (point.get_x() - position_.get_x());
+    double dy = (point.get_y() - position_.get_y());
     return (dx * dx) + (dy * dy) < radius_ * radius_;
+}
+
+bool Body::IsInside(Body *body)
+{
+    return IsInside(body->position_);
+}
+
+void Body::Select(Point2d &point)
+{
+    if (IsInside(point)) {
+        selected_ = true;
+        std::cout << "selected" << std::endl;
+    }
+    else {
+        selected_ = false;
+        orbit_points_.clear();
+    }
 }

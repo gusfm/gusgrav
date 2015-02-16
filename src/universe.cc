@@ -1,7 +1,7 @@
 #include <GL/gl.h>
 #include "universe.h"
 
-void Universe::CreateRandomBodiesSameMass(int number)
+void Universe::CreateRandomBodies(int number)
 {
     srand(time(NULL));
     for (int i = 0; i < number; ++i) {
@@ -11,9 +11,9 @@ void Universe::CreateRandomBodiesSameMass(int number)
     }
 }
 
-Universe::Universe(Point2d &size) : size_(size), render_info_(false), merge_bodies_(true)
+Universe::Universe(Point2d &size) : size_(size), render_info_(false), merge_bodies_(false)
 {
-    CreateRandomBodiesSameMass(1000);
+    CreateRandomBodies(1000);
 }
 
 Universe::~Universe()
@@ -23,6 +23,11 @@ Universe::~Universe()
 void Universe::toggle_render_acceleration()
 {
     render_info_ = !render_info_;
+}
+
+void Universe::toggle_merge_bodies()
+{
+    merge_bodies_ = !merge_bodies_;
 }
 
 void Universe::Render()
@@ -67,6 +72,7 @@ void Universe::CheckCloseBodies(Body *body)
         if (*iter != body) {
             if (body->IsInside(*iter)) {
                 body->Merge(*iter);
+                delete *iter;
                 iter = body_list_.erase(iter);
             }
         }
@@ -91,4 +97,12 @@ void Universe::Process()
 unsigned int Universe::get_num_bodies()
 {
     return body_list_.size();
+}
+
+void Universe::SelectBodyAtPoint(Point2d &point)
+{
+    std::list<Body *>::const_iterator iter;
+    for (iter = body_list_.begin(); iter != body_list_.end(); iter++) {
+        (*iter)->Select(point);
+    }
 }

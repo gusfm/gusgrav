@@ -11,9 +11,11 @@ class Universe {
     void Render();
     void Process();
     void toggle_render_acceleration();
+    void toggle_merge_bodies();
     unsigned int get_num_bodies();
+    void SelectBodyAtPoint(Point2d &point);
    private:
-    void CreateRandomBodiesSameMass(int number);
+    void CreateRandomBodies(int number);
     void CalculateBodyAcceleration(Body *body);
     void CalculateNBodyAcceleration();
     void CheckCloseBodies(Body *body);

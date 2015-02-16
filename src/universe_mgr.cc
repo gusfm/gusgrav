@@ -59,9 +59,15 @@ static void universe_mgr_key_callback(GLFWwindow* window, int key, int scancode,
             break;
 
         case GLFW_KEY_A:
-            /* Enable acceleration vector rendering. */
+            /* Toggle acceleration vector rendering. */
             if (action == 1)
                 universe_mgr.universe->toggle_render_acceleration();
+            break;
+
+        case GLFW_KEY_M:
+            /* Toggle bodies merge. */
+            if (action == 1)
+                universe_mgr.universe->toggle_merge_bodies();
             break;
 
         case GLFW_KEY_LEFT:
@@ -97,6 +103,19 @@ static void universe_mgr_scroll_callback(GLFWwindow* window, double xoffset, dou
         universe_mgr_zoom_at(x, y, 1/ZOOM_SCALE);
 }
 
+static void universe_mgr_mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    double x, y;
+    double height = universe_mgr.window_size->get_y();
+    glfwGetCursorPos(window, &x, &y);
+    y = height - y;
+    if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
+        std::cout << "x=" << x << " y=" << y << std::endl;
+        Point2d p(x, y);
+        universe_mgr.universe->SelectBodyAtPoint(p);
+    }
+}
+
 static void universe_mgr_resize_callback(GLFWwindow* window, int width, int height)
 {
     universe_mgr.window_size->set_x(width);
@@ -108,83 +127,6 @@ static void universe_mgr_resize_callback(GLFWwindow* window, int width, int heig
     /* Reset the projection matrix. */
     glLoadIdentity();
     glOrtho(0.0f, width, 0.0f, height, -1.0f, 1.0f);
-}
-
-static GLFWwindow *universe_mgr_create_window(const char *name, Point2d *size)
-{
-    GLFWwindow *window;
-    /* Set an error callback. */
-    glfwSetErrorCallback(universe_mgr_error_callback);
-    /* Initialize window. */
-    if (!glfwInit())
-        return NULL;
-    /* Creating a window and context. */
-    window = glfwCreateWindow(size->get_x(), size->get_y(), name, NULL, NULL);
-    if (window == NULL) {
-        glfwTerminate();
-        return NULL;
-    }
-    /* Make the OpenGL context current. */
-    glfwMakeContextCurrent(window);
-    /* Set a key input callback. */
-    glfwSetKeyCallback(window, universe_mgr_key_callback);
-    glfwSetScrollCallback(window, universe_mgr_scroll_callback);
-    glfwSetFramebufferSizeCallback(window, universe_mgr_resize_callback);
-    return window;
-}
-
-static void universe_mgr_gl_init(Point2d *size)
-{
-    /* Setup our viewport to be the entire size of the window. */
-    glViewport(0, 0, (GLsizei)size->get_x(), (GLsizei)size->get_y());
-    /* Change to the projection matrix, reset the matrix and set up orthagonal projection. */
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    /* Paramters: left, right, bottom, top, near, far. */
-    glOrtho(0.0f, size->get_x(), 0.0f, size->get_y(), -1.0f, 1.0f);
-    /* ----- OpenGL settings ----- */
-    /* Enable (gouraud) shading. */
-    glEnable(GL_SMOOTH);
-    /* Disable depth testing. */
-    glDisable(GL_DEPTH_TEST);
-#if 0
-    /* Enable blending (used for alpha) and blending function to use. */
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-#endif
-    /* Set a 'chunky' line width. */
-    glLineWidth(1.0f);
-    /* Enable anti-aliasing on lines. */
-    glEnable(GL_LINE_SMOOTH);
-    /* Set a 'chunky' point size. */
-    glPointSize(1.0f);
-    /* Enable anti-aliasing on points. */
-    glEnable(GL_POINT_SMOOTH);
-}
-
-int universe_mgr_init(const char *name, int sizeX, int sizeY)
-{
-    universe_mgr.window_size = new Point2d(sizeX, sizeY);
-    universe_mgr.zoom = 1.0;
-    universe_mgr.zoom_center.set(universe_mgr.window_size->get_x() / 2, universe_mgr.window_size->get_y() / 2);
-    /* Create window. */
-    universe_mgr.window = universe_mgr_create_window(name, universe_mgr.window_size);
-    if (universe_mgr.window == NULL) {
-        return -1;
-    }
-    /* Create universe. */
-    universe_mgr.universe = new Universe(*universe_mgr.window_size);
-    /* Create a pixmap font from a TrueType file. */
-    universe_mgr.font = new FTGLPixmapFont("/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf");
-    if (universe_mgr.font->Error()) {
-        universe_mgr_terminate();
-        return -1;
-    }
-    /* Set the font size. */
-    universe_mgr.font->FaceSize(GM_FONT_SIZE, GM_FONT_SIZE);
-    /* Initialize OpenGl. */
-    universe_mgr_gl_init(universe_mgr.window_size);
-    return 0;
 }
 
 void universe_mgr_terminate(void)
@@ -204,7 +146,7 @@ void universe_mgr_terminate(void)
 static void game_mgr_render_help()
 {
     glRasterPos2f(0, universe_mgr.window_size->get_y() - GM_FONT_SIZE);
-    universe_mgr.font->Render("[q] quit; [a] render body info;");
+    universe_mgr.font->Render("[q] quit; [a] render body info; [m] merge close bodies;");
 }
 
 static void universe_mgr_render_body_count()
@@ -241,6 +183,84 @@ static void universe_mgr_render(void)
     /* Do other glfw things. */
     glfwSwapBuffers(universe_mgr.window);
     glfwPollEvents();
+}
+
+static void universe_mgr_gl_init(Point2d *size)
+{
+    /* Setup our viewport to be the entire size of the window. */
+    glViewport(0, 0, (GLsizei)size->get_x(), (GLsizei)size->get_y());
+    /* Change to the projection matrix, reset the matrix and set up orthagonal projection. */
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    /* Paramters: left, right, bottom, top, near, far. */
+    glOrtho(0.0f, size->get_x(), 0.0f, size->get_y(), -1.0f, 1.0f);
+    /* ----- OpenGL settings ----- */
+    /* Enable (gouraud) shading. */
+    glEnable(GL_SMOOTH);
+    /* Disable depth testing. */
+    glDisable(GL_DEPTH_TEST);
+#if 0
+    /* Enable blending (used for alpha) and blending function to use. */
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+#endif
+    /* Set a 'chunky' line width. */
+    glLineWidth(1.0f);
+    /* Enable anti-aliasing on lines. */
+    glEnable(GL_LINE_SMOOTH);
+    /* Set a 'chunky' point size. */
+    glPointSize(1.0f);
+    /* Enable anti-aliasing on points. */
+    glEnable(GL_POINT_SMOOTH);
+}
+
+static GLFWwindow *universe_mgr_create_window(const char *name, Point2d *size)
+{
+    GLFWwindow *window;
+    /* Set an error callback. */
+    glfwSetErrorCallback(universe_mgr_error_callback);
+    /* Initialize window. */
+    if (!glfwInit())
+        return NULL;
+    /* Creating a window and context. */
+    window = glfwCreateWindow(size->get_x(), size->get_y(), name, NULL, NULL);
+    if (window == NULL) {
+        glfwTerminate();
+        return NULL;
+    }
+    /* Make the OpenGL context current. */
+    glfwMakeContextCurrent(window);
+    /* Set a key input callback. */
+    glfwSetKeyCallback(window, universe_mgr_key_callback);
+    glfwSetScrollCallback(window, universe_mgr_scroll_callback);
+    glfwSetMouseButtonCallback(window, universe_mgr_mouse_button_callback);
+    glfwSetFramebufferSizeCallback(window, universe_mgr_resize_callback);
+    return window;
+}
+
+int universe_mgr_init(const char *name, int sizeX, int sizeY)
+{
+    universe_mgr.window_size = new Point2d(sizeX, sizeY);
+    universe_mgr.zoom = 1.0;
+    universe_mgr.zoom_center.set(universe_mgr.window_size->get_x() / 2, universe_mgr.window_size->get_y() / 2);
+    /* Create window. */
+    universe_mgr.window = universe_mgr_create_window(name, universe_mgr.window_size);
+    if (universe_mgr.window == NULL) {
+        return -1;
+    }
+    /* Create universe. */
+    universe_mgr.universe = new Universe(*universe_mgr.window_size);
+    /* Create a pixmap font from a TrueType file. */
+    universe_mgr.font = new FTGLPixmapFont("/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf");
+    if (universe_mgr.font->Error()) {
+        universe_mgr_terminate();
+        return -1;
+    }
+    /* Set the font size. */
+    universe_mgr.font->FaceSize(GM_FONT_SIZE, GM_FONT_SIZE);
+    /* Initialize OpenGl. */
+    universe_mgr_gl_init(universe_mgr.window_size);
+    return 0;
 }
 
 void universe_mgr_main_loop(void)
