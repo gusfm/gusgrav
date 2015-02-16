@@ -276,18 +276,27 @@ int universe_mgr_init(const char *name, int sizeX, int sizeY)
     return 0;
 }
 
+
+static void print_fps(void)
+{
+    static double last_time_1s = 0;
+    static unsigned int frames_1s = 0;
+    double cur_time = glfwGetTime();
+    frames_1s++;
+    double dt = cur_time - last_time_1s;
+    if (dt >= 1.0) {
+        std::cout << frames_1s / dt << " fps" << std::endl;
+        last_time_1s = cur_time;
+        frames_1s = 0;
+    }
+}
+
 void universe_mgr_main_loop(void)
 {
-    int loop_cnt = 0;
-    struct timespec reqtime;
-    reqtime.tv_sec = 0;
-    reqtime.tv_nsec = 1000000; /* 1 ms */
     while (!glfwWindowShouldClose(universe_mgr.window)) {
         universe_mgr_render();
-        if (loop_cnt++ % 10 == 0) {
-            universe_mgr.universe->Process();
-        }
-        nanosleep(&reqtime, NULL);
+        universe_mgr.universe->Process();
+        print_fps();
     }
 }
 
