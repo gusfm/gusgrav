@@ -46,7 +46,7 @@ int main(int argc, char const* argv[])
 
     srand(time(NULL));
 
-    ret = universe_mgr_init("GusDungeon", 800, 600);
+    ret = universe_mgr_init("gusgrav", 1024, 800);
     if (ret < 0) {
         printf("Error: could not create game manager!\n");
         exit(EXIT_FAILURE);
