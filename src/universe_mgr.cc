@@ -204,7 +204,7 @@ void universe_mgr_terminate(void)
 static void game_mgr_render_help()
 {
     glRasterPos2f(0, universe_mgr.window_size->get_y() - GM_FONT_SIZE);
-    universe_mgr.font->Render("[q] quit game; [a] render body info;");
+    universe_mgr.font->Render("[q] quit; [a] render body info;");
 }
 
 static void universe_mgr_render_body_count()
@@ -218,7 +218,7 @@ static void universe_mgr_render_body_count()
 static void universe_mgr_render_info()
 {
     glPushMatrix();
-    glColor3f(1.f, 1.f, 1.f);
+    glColor3f(1.0f, 1.0f, 0.0f);
     game_mgr_render_help();
     universe_mgr_render_body_count();
     glPopMatrix();
@@ -231,12 +231,13 @@ static void universe_mgr_render(void)
     /* Reset the matrix. */
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    /* Render info before scale and translate. */
+    universe_mgr_render_info();
     /* Scale and translate. */
     glScalef(universe_mgr.zoom, universe_mgr.zoom, 1);
     glTranslatef(universe_mgr.pan.get_x(), universe_mgr.pan.get_y(), 0);
     /* Draw stuff. */
     universe_mgr.universe->Render();
-    universe_mgr_render_info();
     /* Do other glfw things. */
     glfwSwapBuffers(universe_mgr.window);
     glfwPollEvents();
