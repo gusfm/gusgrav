@@ -12,6 +12,7 @@ class Point2d {
     Point2d();
     Point2d(double x, double y);
     void set(double x, double y);
+    void incr(double x, double y);
     double get_x() const;
     void set_x(double x);
     double get_y() const;

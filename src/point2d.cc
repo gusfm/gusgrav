@@ -17,6 +17,12 @@ void Point2d::set(double x, double y)
     y_ = y;
 }
 
+void Point2d::incr(double x, double y)
+{
+    x_ += x;
+    y_ += y;
+}
+
 double Point2d::get_x() const
 {
     return x_;
