@@ -49,6 +49,12 @@ static void universe_mgr_zoom_at(double x, double y, double factor)
     universe_mgr_pan(x, y);
 }
 
+static void universe_mgr_reset_zoom_pan()
+{
+    universe_mgr.zoom = 1.0;
+    universe_mgr.pan.set(0, 0);
+}
+
 static void universe_mgr_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     switch (key) {
@@ -86,6 +92,10 @@ static void universe_mgr_key_callback(GLFWwindow* window, int key, int scancode,
             universe_mgr_pan(0, -PAN_STEP);
             break;
 
+        case GLFW_KEY_SPACE:
+            universe_mgr_reset_zoom_pan();
+            break;
+
         default:
             break;
     }
@@ -113,6 +123,9 @@ static void universe_mgr_mouse_button_callback(GLFWwindow* window, int button, i
         std::cout << "x=" << x << " y=" << y << std::endl;
         Point2d p(x, y);
         universe_mgr.universe->SelectBodyAtPoint(p);
+    } else if (button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS) {
+        Point2d p(x, y);
+        universe_mgr.universe->CreateBodyAtPosition(p);
     }
 }
 

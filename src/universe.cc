@@ -7,7 +7,7 @@ void Universe::CreateRandomBodies(int number)
     for (int i = 0; i < number; ++i) {
         const Point2d pos(rand() % (int)size_.get_x(), rand() % (int)size_.get_y());
         const Vector2d vel(Point2d(0, 0));
-        body_list_.push_back(new Body(pos, vel, 1 + (rand() % 10)));
+        body_list_.push_back(new Body(pos, vel, 1 + (rand() % 100)));
     }
 }
 
@@ -105,4 +105,10 @@ void Universe::SelectBodyAtPoint(Point2d &point)
     for (iter = body_list_.begin(); iter != body_list_.end(); iter++) {
         (*iter)->Select(point);
     }
+}
+
+void Universe::CreateBodyAtPosition(Point2d &pos)
+{
+    const Vector2d vel(Point2d(0, 0));
+    body_list_.push_back(new Body(pos, vel, 10000));
 }

@@ -14,6 +14,7 @@ class Universe {
     void toggle_merge_bodies();
     unsigned int get_num_bodies();
     void SelectBodyAtPoint(Point2d &point);
+    void CreateBodyAtPosition(Point2d &pos);
    private:
     void CreateRandomBodies(int number);
     void CalculateBodyAcceleration(Body *body);
