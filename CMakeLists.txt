@@ -40,6 +40,4 @@ target_link_libraries(${PROJECT_TEST_NAME}
     ${CMAKE_THREAD_LIBS_INIT}
     )
 
-add_dependencies(${PROJECT_TEST_NAME} googletest)
-
 add_test(test ${PROJECT_TEST_NAME})
