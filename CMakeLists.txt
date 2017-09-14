@@ -35,8 +35,8 @@ add_executable(${PROJECT_TEST_NAME}
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 target_link_libraries(${PROJECT_TEST_NAME}
-    /usr/lib/libgtest.a
-    /usr/lib/libgtest_main.a
+    gtest
+    gtest_main
     ${CMAKE_THREAD_LIBS_INIT}
     )
 
