@@ -3,7 +3,6 @@
 #include <time.h>
 #include <string.h>
 #include <GLFW/glfw3.h>
-#include <FTGL/ftgl.h>
 
 #include "universe_mgr.h"
 #include "point2d.h"
@@ -20,7 +19,6 @@ typedef struct {
     Point2d pan;
     Point2d zoom_center;
     Universe *universe;
-    FTGLPixmapFont *font;
     GLFWwindow *window;
 } universe_mgr_t;
 
@@ -144,9 +142,6 @@ static void universe_mgr_resize_callback(GLFWwindow* window, int width, int heig
 
 void universe_mgr_terminate(void)
 {
-    if (universe_mgr.font) {
-        delete universe_mgr.font;
-    }
     if (universe_mgr.universe) {
         delete universe_mgr.universe;
     }
@@ -154,29 +149,6 @@ void universe_mgr_terminate(void)
         glfwDestroyWindow(universe_mgr.window);
         glfwTerminate();
     }
-}
-
-static void game_mgr_render_help()
-{
-    glRasterPos2f(0, universe_mgr.window_size->get_y() - GM_FONT_SIZE);
-    universe_mgr.font->Render("[q] quit; [a] render body info; [m] merge close bodies;");
-}
-
-static void universe_mgr_render_body_count()
-{
-    char str[30];
-    snprintf(str, sizeof(str), "body count: %u", universe_mgr.universe->get_num_bodies());
-    glRasterPos2f(universe_mgr.window_size->get_x() - strlen(str) * 10, universe_mgr.window_size->get_y() - GM_FONT_SIZE);
-    universe_mgr.font->Render(str);
-}
-
-static void universe_mgr_render_info()
-{
-    glPushMatrix();
-    glColor3f(1.0f, 1.0f, 0.0f);
-    game_mgr_render_help();
-    universe_mgr_render_body_count();
-    glPopMatrix();
 }
 
 static void universe_mgr_render(void)
@@ -187,7 +159,7 @@ static void universe_mgr_render(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     /* Render info before scale and translate. */
-    universe_mgr_render_info();
+    //universe_mgr_render_info();
     /* Scale and translate. */
     glScalef(universe_mgr.zoom, universe_mgr.zoom, 1);
     glTranslatef(universe_mgr.pan.get_x(), universe_mgr.pan.get_y(), 0);
@@ -263,14 +235,6 @@ int universe_mgr_init(const char *name, int sizeX, int sizeY)
     }
     /* Create universe. */
     universe_mgr.universe = new Universe(*universe_mgr.window_size);
-    /* Create a pixmap font from a TrueType file. */
-    universe_mgr.font = new FTGLPixmapFont("/usr/share/fonts/truetype/freefont/FreeMonoBold.ttf");
-    if (universe_mgr.font->Error()) {
-        universe_mgr_terminate();
-        return -1;
-    }
-    /* Set the font size. */
-    universe_mgr.font->FaceSize(GM_FONT_SIZE, GM_FONT_SIZE);
     /* Initialize OpenGl. */
     universe_mgr_gl_init(universe_mgr.window_size);
     return 0;
