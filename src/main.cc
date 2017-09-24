@@ -7,12 +7,49 @@
 
 #include "universe_mgr.h"
 
-int main(int argc, char const* argv[])
+static int parse_args(int argc, char **argv)
 {
-    int ret;
+    int opt;
+    while ((opt = getopt(argc, argv, "ch")) != -1) {
+        switch (opt) {
+            case 'c':
+                printf(
+                    "%s:\n"
+                    "Controls:\n"
+                    "A:                 Render body info\n"
+                    "M:                 Toggle the merge of bodies when "
+                    "they're close\n"
+                    "Keyboard arrows:   Move screen\n"
+                    "Mouse scroll:      Zoom in/out\n"
+                    "Right mouse btn:   Create a body\n"
+                    "ESQ:               Quit program\n",
+                    argv[0]);
+                exit(EXIT_SUCCESS);
+            default:
+                return -1;
+        }
+    }
+    return 0;
+}
+
+static void print_help(char **argv)
+{
+    fprintf(stderr,
+            "Usage: %s [options]\n"
+            "Options:\n"
+            "  -c\t\tPrint keyboard controls\n"
+            "  -h\t\tPrint help and exit\n",
+            argv[0]);
+}
+
+int main(int argc, char *argv[])
+{
+    if (parse_args(argc, argv) < 0) {
+        print_help(argv);
+        exit(EXIT_FAILURE);
+    }
     srand(time(NULL));
-    ret = universe_mgr_init("gusgrav", 1024, 800);
-    if (ret < 0) {
+    if (universe_mgr_init("gusgrav", 1024, 800) < 0) {
         printf("Error: could not create game manager!\n");
         exit(EXIT_FAILURE);
     }
