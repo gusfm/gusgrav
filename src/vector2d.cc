@@ -1,16 +1,15 @@
-#include <cmath>
-#include <GL/gl.h>
-#include <iostream>
 #include "vector2d.h"
+#include <GL/gl.h>
+#include <cmath>
+#include <iostream>
 
-Vector2d::Vector2d() : Point2d(1, 0), translation_p0_(0, 0), translation_p1_(0, 0)
+Vector2d::Vector2d()
+    : Point2d(1, 0), translation_p0_(0, 0), translation_p1_(0, 0)
 {
-
 }
 
 Vector2d::Vector2d(const Point2d &point) : Point2d(point)
 {
-
 }
 
 void Vector2d::set(double x, double y)
@@ -32,37 +31,7 @@ void Vector2d::Render()
     glEnd();
 }
 
-void Vector2d::rotate(double rad)
-{
-#if 0
-    double sinTmp, cosTmp, dirX, dirY;
-
-    sinTmp = sin(rad);
-    cosTmp = cos(rad);
-
-    dirX = direction_.get_x();
-    dirY = direction_.get_y();
-
-    direction_.set_x(dirX * cosTmp - dirY * sinTmp);
-    direction_.set_y(dirX * sinTmp + dirY * cosTmp);
-#endif
-}
-
-#if 0
-Vector2d& Vector2d::operator+=(const Vector2d& v)
-{
-    (Point2d)this += (Point2d)v;
-    return *this;
-}
-
-Vector2d operator+(Vector2d v1, const Vector2d& v2)
-{
-    v1 += v2;
-    return v1;
-}
-#endif
-
-Vector2d& Vector2d::operator*=(const double s)
+Vector2d &Vector2d::operator*=(const double s)
 {
     Point2d::operator*=(s);
     return *this;
@@ -74,7 +43,7 @@ Vector2d operator*(Vector2d lhs, const double s)
     return lhs;
 }
 
-Vector2d& Vector2d::operator/=(const double s)
+Vector2d &Vector2d::operator/=(const double s)
 {
     Point2d::operator/=(s);
     return *this;

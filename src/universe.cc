@@ -1,17 +1,19 @@
-#include <GL/gl.h>
 #include "universe.h"
+#include <GL/gl.h>
 
 void Universe::CreateRandomBodies(int number)
 {
     srand(time(NULL));
     for (int i = 0; i < number; ++i) {
-        const Point2d pos(rand() % (int)size_.get_x(), rand() % (int)size_.get_y());
+        const Point2d pos(rand() % (int)size_.get_x(),
+                          rand() % (int)size_.get_y());
         const Vector2d vel(Point2d(0, 0));
         body_list_.push_back(new Body(pos, vel, 1 + (rand() % 100)));
     }
 }
 
-Universe::Universe(Point2d &size) : size_(size), render_info_(false), merge_bodies_(false)
+Universe::Universe(Point2d &size)
+    : size_(size), render_info_(false), merge_bodies_(false)
 {
     CreateRandomBodies(1000);
 }
@@ -40,7 +42,6 @@ void Universe::Render()
             (*iter)->RenderInfo();
         }
     }
-
 }
 
 void Universe::CalculateBodyAcceleration(Body *body)

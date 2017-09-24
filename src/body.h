@@ -5,7 +5,8 @@
 #include "point2d.h"
 #include "vector2d.h"
 
-class Body {
+class Body
+{
    public:
     Body(const Point2d &position, const Vector2d &velocity, unsigned int mass);
     ~Body();
@@ -21,6 +22,7 @@ class Body {
     void Merge(Body *body);
     bool IsInside(Body *body);
     void Select(Point2d &point);
+
    protected:
     bool IsInside(Point2d &point);
     void UpdateRadius();
@@ -33,7 +35,7 @@ class Body {
     float radius_;
     unsigned int mass_;
     bool selected_;
-    std::list <Point2d> orbit_points_;
+    std::list<Point2d> orbit_points_;
 };
 
 #endif /* GUSGRAV_SRC_OBJECT_H_ */

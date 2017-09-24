@@ -1,12 +1,12 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <time.h>
-#include <string.h>
 #include <GLFW/glfw3.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
 
-#include "universe_mgr.h"
 #include "point2d.h"
 #include "universe.h"
+#include "universe_mgr.h"
 
 #define GM_FONT_SIZE 16
 #define ZOOM_SCALE 1.2L
@@ -24,7 +24,7 @@ typedef struct {
 
 static universe_mgr_t universe_mgr;
 
-static void universe_mgr_error_callback(int error, const char* description)
+static void universe_mgr_error_callback(int error, const char *description)
 {
     fputs(description, stderr);
 }
@@ -53,7 +53,8 @@ static void universe_mgr_reset_zoom_pan()
     universe_mgr.pan.set(0, 0);
 }
 
-static void universe_mgr_key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+static void universe_mgr_key_callback(GLFWwindow *window, int key, int scancode,
+                                      int action, int mods)
 {
     switch (key) {
         case GLFW_KEY_ESCAPE:
@@ -99,7 +100,8 @@ static void universe_mgr_key_callback(GLFWwindow* window, int key, int scancode,
     }
 }
 
-static void universe_mgr_scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+static void universe_mgr_scroll_callback(GLFWwindow *window, double xoffset,
+                                         double yoffset)
 {
     double x, y;
     double height = universe_mgr.window_size->get_y();
@@ -108,10 +110,11 @@ static void universe_mgr_scroll_callback(GLFWwindow* window, double xoffset, dou
     if (yoffset > 0)
         universe_mgr_zoom_at(x, y, ZOOM_SCALE);
     else if (yoffset < 0)
-        universe_mgr_zoom_at(x, y, 1/ZOOM_SCALE);
+        universe_mgr_zoom_at(x, y, 1 / ZOOM_SCALE);
 }
 
-static void universe_mgr_mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+static void universe_mgr_mouse_button_callback(GLFWwindow *window, int button,
+                                               int action, int mods)
 {
     double x, y;
     double height = universe_mgr.window_size->get_y();
@@ -127,7 +130,8 @@ static void universe_mgr_mouse_button_callback(GLFWwindow* window, int button, i
     }
 }
 
-static void universe_mgr_resize_callback(GLFWwindow* window, int width, int height)
+static void universe_mgr_resize_callback(GLFWwindow *window, int width,
+                                         int height)
 {
     universe_mgr.window_size->set_x(width);
     universe_mgr.window_size->set_y(height);
@@ -159,7 +163,7 @@ static void universe_mgr_render(void)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     /* Render info before scale and translate. */
-    //universe_mgr_render_info();
+    // universe_mgr_render_info();
     /* Scale and translate. */
     glScalef(universe_mgr.zoom, universe_mgr.zoom, 1);
     glTranslatef(universe_mgr.pan.get_x(), universe_mgr.pan.get_y(), 0);
@@ -174,7 +178,8 @@ static void universe_mgr_gl_init(Point2d *size)
 {
     /* Setup our viewport to be the entire size of the window. */
     glViewport(0, 0, (GLsizei)size->get_x(), (GLsizei)size->get_y());
-    /* Change to the projection matrix, reset the matrix and set up orthagonal projection. */
+    /* Change to the projection matrix, reset the matrix and set up orthagonal
+     * projection. */
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     /* Paramters: left, right, bottom, top, near, far. */
@@ -227,9 +232,11 @@ int universe_mgr_init(const char *name, int sizeX, int sizeY)
 {
     universe_mgr.window_size = new Point2d(sizeX, sizeY);
     universe_mgr.zoom = 1.0;
-    universe_mgr.zoom_center.set(universe_mgr.window_size->get_x() / 2, universe_mgr.window_size->get_y() / 2);
+    universe_mgr.zoom_center.set(universe_mgr.window_size->get_x() / 2,
+                                 universe_mgr.window_size->get_y() / 2);
     /* Create window. */
-    universe_mgr.window = universe_mgr_create_window(name, universe_mgr.window_size);
+    universe_mgr.window =
+        universe_mgr_create_window(name, universe_mgr.window_size);
     if (universe_mgr.window == NULL) {
         return -1;
     }
@@ -239,7 +246,6 @@ int universe_mgr_init(const char *name, int sizeX, int sizeY)
     universe_mgr_gl_init(universe_mgr.window_size);
     return 0;
 }
-
 
 static void print_fps(void)
 {
@@ -263,4 +269,3 @@ void universe_mgr_main_loop(void)
         print_fps();
     }
 }
-

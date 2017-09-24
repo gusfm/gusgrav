@@ -1,14 +1,12 @@
-#include <cmath>
 #include "point2d.h"
+#include <cmath>
 
 Point2d::Point2d(double x, double y) : x_(x), y_(y)
 {
-
 }
 
 Point2d::Point2d() : x_(0), y_(0)
 {
-
 }
 
 void Point2d::set(double x, double y)
@@ -54,11 +52,6 @@ double Point2d::Distance(Point2d& c)
     y2 = (ydiff * ydiff);
 
     return sqrt(x2 + y2);
-}
-
-void Point2d::Render()
-{
-    // TODO
 }
 
 Point2d& Point2d::operator*=(const double s)

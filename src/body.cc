@@ -1,12 +1,15 @@
-#include <cmath>
-#include <GL/gl.h>
 #include "body.h"
+#include <GL/gl.h>
+#include <cmath>
 
 #define EPS2 7.389056099
 
-
-Body::Body(const Point2d &position, const Vector2d &velocity, unsigned int mass) :
-    position_(position), velocity_(velocity), acceleration_(Point2d(0, 0)), mass_(mass), selected_(false)
+Body::Body(const Point2d &position, const Vector2d &velocity, unsigned int mass)
+    : position_(position),
+      velocity_(velocity),
+      acceleration_(Point2d(0, 0)),
+      mass_(mass),
+      selected_(false)
 {
     UpdateRadius();
 }
@@ -23,17 +26,17 @@ void Body::UpdateRadius()
 static void DrawCircle(const Point2d &p, float r, int num_segments)
 {
     float theta = 2 * M_PI / (float)num_segments;
-    float c = cosf(theta);//precalculate the sine and cosine
+    float c = cosf(theta);  // precalculate the sine and cosine
     float s = sinf(theta);
     float t;
 
-    float x = r;//we start at angle = 0
+    float x = r;  // we start at angle = 0
     float y = 0;
 
     glBegin(GL_LINE_LOOP);
     for (int ii = 0; ii < num_segments; ii++) {
-        glVertex2f(x + p.get_x(), y + p.get_y());//output vertex
-        //apply the rotation matrix
+        glVertex2f(x + p.get_x(), y + p.get_y());  // output vertex
+        // apply the rotation matrix
         t = x;
         x = c * x - s * y;
         y = s * t + c * y;
@@ -46,7 +49,8 @@ void Body::DrawOrbit()
     if (orbit_points_.size() > 1) {
         std::list<Point2d>::const_iterator iter;
         glBegin(GL_LINE_STRIP);
-        for (iter = orbit_points_.begin(); iter != orbit_points_.end(); iter++) {
+        for (iter = orbit_points_.begin(); iter != orbit_points_.end();
+             iter++) {
             glVertex2f((*iter).get_x(), (*iter).get_y());
         }
         glEnd();
@@ -124,7 +128,8 @@ double Body::Distance(Body *body)
 void Body::Merge(Body *body)
 {
     /* Momentum formula: p = m.v; p = p1 + p2; */
-    Vector2d p = (velocity_ * (double)mass_) + (body->velocity_ * (double)body->mass_);
+    Vector2d p =
+        (velocity_ * (double)mass_) + (body->velocity_ * (double)body->mass_);
     mass_ += body->mass_;
     velocity_ = p / (double)mass_;
     UpdateRadius();
@@ -148,8 +153,7 @@ void Body::Select(Point2d &point)
     if (IsInside(point)) {
         selected_ = true;
         std::cout << "selected" << std::endl;
-    }
-    else {
+    } else {
         selected_ = false;
         orbit_points_.clear();
     }

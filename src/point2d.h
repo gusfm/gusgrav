@@ -3,7 +3,8 @@
 
 #include <iostream>
 
-class Point2d {
+class Point2d
+{
    private:
     double x_;
     double y_;
@@ -18,7 +19,6 @@ class Point2d {
     double get_y() const;
     void set_y(double y);
     double Distance(Point2d& c);
-    void Render();
     Point2d& operator+=(const Point2d& point);
     Point2d& operator-=(const Point2d& point);
     Point2d& operator*=(const double s);
