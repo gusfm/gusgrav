@@ -1,32 +1,15 @@
-#ifndef GUSGRAV_SRC_UNIVERSE_H_
-#define GUSGRAV_SRC_UNIVERSE_H_
+#ifndef __UNIVERSE_H__
+#define __UNIVERSE_H__
 
-#include <list>
-#include "body.h"
+#include <stddef.h>
+#include "vector.h"
 
-class Universe
-{
-   public:
-    Universe(Point2d &size);
-    ~Universe();
-    void Render();
-    void Process();
-    void toggle_render_acceleration();
-    void toggle_merge_bodies();
-    unsigned int get_num_bodies();
-    void SelectBodyAtPoint(Point2d &point);
-    void CreateBodyAtPosition(Point2d &pos);
+void universe_init(size_t size_x, size_t size_y);
+void universe_finish(void);
+void universe_toggle_render_info(void);
+void universe_render(void);
+void universe_process(void);
+void universe_select_body(vector_t *pos);
+void universe_create_body(vector_t *pos);
 
-   private:
-    void CreateRandomBodies(int number);
-    void CalculateBodyAcceleration(Body *body);
-    void CalculateNBodyAcceleration();
-    void CheckCloseBodies(Body *body);
-    void CheckCloseBodiesAll();
-    Point2d size_;
-    bool render_info_;
-    bool merge_bodies_;
-    std::list<Body *> body_list_;
-};
-
-#endif /* GUSGRAV_SRC_UNIVERSE_H_ */
+#endif /* __UNIVERSE_H__ */

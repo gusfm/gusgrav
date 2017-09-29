@@ -1,41 +1,31 @@
-#ifndef GUSGRAV_SRC_OBJECT_H_
-#define GUSGRAV_SRC_OBJECT_H_
+#ifndef __OBJECT_H__
+#define __OBJECT_H__
 
-#include <list>
-#include "point2d.h"
-#include "vector2d.h"
+#include <stdbool.h>
+#include "vector.h"
 
-class Body
-{
-   public:
-    Body(const Point2d &position, const Vector2d &velocity, unsigned int mass);
-    ~Body();
-    void Render();
-    void RenderInfo();
-    unsigned int get_mass() const;
-    const Point2d &get_velocity();
-    void CalculateAcceleration(const Body *j);
-    void ClearAcceleration();
-    void Process();
-    void ProcessInfoRender(double scale);
-    double Distance(Body *body);
-    void Merge(Body *body);
-    bool IsInside(Body *body);
-    void Select(Point2d &point);
+typedef struct {
+    vector_t pos;          /* body position */
+    vector_t vel;          /* body velocity */
+    unsigned int mass;     /* the mass changes when two bodies merge */
+    vector_t accel;        /* body acceleration */
+    float radius;          /* radius is calculated based on the body mass */
+    vector_t accel_render; /* acceleration vector to be rendered */
+    vector_t vel_render;   /* velocity vector to be rendered */
+    bool selected;         /* true if the body is selected */
+} body_t;
 
-   protected:
-    bool IsInside(Point2d &point);
-    void UpdateRadius();
-    void DrawOrbit();
-    Point2d position_;
-    Vector2d velocity_;
-    Vector2d acceleration_;
-    Vector2d acceleration_render_;
-    Vector2d velocity_render_;
-    float radius_;
-    unsigned int mass_;
-    bool selected_;
-    std::list<Point2d> orbit_points_;
-};
+body_t *body_create(vector_t *pos, vector_t *vel, unsigned int mass);
+void body_destroy(body_t *b);
+void body_clear_accel(body_t *b);
+void body_calc_accel(body_t *i, body_t *j);
+void body_process(body_t *b);
+double body_distance(body_t *b1, body_t *b2);
+void body_merge(body_t *b1, body_t *b2);
+bool body_is_inside(body_t *b1, body_t *b2);
+void body_render(body_t *b);
+void body_render_info(body_t *b);
+void body_process_render_info(body_t *b, double scale);
+void body_select(body_t *b, vector_t *point);
 
-#endif /* GUSGRAV_SRC_OBJECT_H_ */
+#endif /* __OBJECT_H__ */

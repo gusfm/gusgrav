@@ -4,8 +4,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
-
-#include "universe_mgr.h"
+#include "window.h"
 
 static int parse_args(int argc, char **argv)
 {
@@ -17,8 +16,6 @@ static int parse_args(int argc, char **argv)
                     "%s:\n"
                     "Controls:\n"
                     "A:                 Render body info\n"
-                    "M:                 Toggle the merge of bodies when "
-                    "they're close\n"
                     "Keyboard arrows:   Move screen\n"
                     "Mouse scroll:      Zoom in/out\n"
                     "Right mouse btn:   Create a body\n"
@@ -49,12 +46,12 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     srand(time(NULL));
-    if (universe_mgr_init("gusgrav", 1024, 800) < 0) {
+    if (window_init("gusgrav", 1024, 800) < 0) {
         printf("Error: could not create game manager!\n");
         exit(EXIT_FAILURE);
     }
-    universe_mgr_main_loop();
-    universe_mgr_terminate();
-
+    window_main_loop();
+    window_terminate();
     return 0;
 }
+
