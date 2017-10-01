@@ -13,7 +13,7 @@ void create_random_bodies(size_t number, size_t size_x, size_t size_y)
     srand(time(NULL));
     for (size_t i = 0; i < number; ++i) {
         vector_t pos = {rand() % size_x, rand() % size_y};
-        vector_t vel = {0, 0};
+        vector_t vel = {((rand() % 10) - 5) / 5.0, ((rand() % 10) - 5) / 5.0};
         list_insert(&bodies_, body_create(&pos, &vel, 1 + (rand() % 100)));
     }
 }
