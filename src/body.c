@@ -99,7 +99,7 @@ void body_process_render_info(body_t *b, double scale)
     /* Scale and translate vectors. */
     vector_mult_scalar(&b->accel_render, &b->accel, scale);
     vector_add_eq(&b->accel_render, &b->pos);
-    vector_mult_scalar(&b->vel_render, &b->vel, scale / 50);
+    vector_mult_scalar(&b->vel_render, &b->vel, scale / 100);
     vector_add_eq(&b->vel_render, &b->pos);
 }
 

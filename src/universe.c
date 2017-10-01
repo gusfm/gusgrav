@@ -65,7 +65,7 @@ static void calc_body_accel(body_t *body)
     }
     body_process(body);
     if (render_info_)
-        body_process_render_info(body, 1000);
+        body_process_render_info(body, 5000);
 }
 
 static void calc_nbody_accel(void)
