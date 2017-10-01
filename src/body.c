@@ -37,7 +37,7 @@ static void render_circle(vector_t *pos, float r, int num_segments)
     float s = sinf(theta);
     float x = r;  // we start at angle = 0
     float y = 0;
-    glBegin(GL_LINE_LOOP);
+    glBegin(GL_POLYGON);
     for (int ii = 0; ii < num_segments; ii++) {
         glVertex2f(x + pos->x, y + pos->y);  // output vertex
         // apply the rotation matrix
