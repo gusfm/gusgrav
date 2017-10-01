@@ -94,9 +94,9 @@ static void scroll_callback(GLFWwindow *window, double xoffset, double yoffset)
     double x, y;
     glfwGetCursorPos(window, &x, &y);
     y = (double)window_height_ - y;
-    if (yoffset > 0)
+    if (yoffset < 0)
         window_zoom_at(x, y, ZOOM_SCALE);
-    else if (yoffset < 0)
+    else if (yoffset > 0)
         window_zoom_at(x, y, 1 / ZOOM_SCALE);
 }
 
