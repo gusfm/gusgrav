@@ -26,9 +26,8 @@ static void window_error_callback(int error, const char *description)
 
 static void window_pan(double dx, double dy)
 {
-    double zoom = window_zoom_;
-    window_pan_x_ += dx / zoom;
-    window_pan_y_ += dy / zoom;
+    window_pan_x_ += dx / window_zoom_;
+    window_pan_y_ += dy / window_zoom_;
 }
 
 static void window_zoom_at(double x, double y, double factor)
@@ -106,12 +105,13 @@ static void mouse_button_callback(GLFWwindow *window, int button, int action,
     (void)mods;
     double x, y;
     glfwGetCursorPos(window, &x, &y);
-    y = (double)window_height_ - y;
+    y = (double)window_height_ - y - 1;
+    double xtmp = (x - window_pan_x_) / window_zoom_;
+    double ytmp = (y - window_pan_y_) / window_zoom_;
+    vector_t point = {xtmp, ytmp};
     if (button == GLFW_MOUSE_BUTTON_1 && action == GLFW_PRESS) {
-        vector_t point = {x, y};
         universe_select_body(&point);
     } else if (button == GLFW_MOUSE_BUTTON_2 && action == GLFW_PRESS) {
-        vector_t point = {x, y};
         universe_create_body(&point);
     }
 }
