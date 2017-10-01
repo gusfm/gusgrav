@@ -41,8 +41,8 @@ static void window_zoom_at(double x, double y, double factor)
 static void window_reset_zoom_pan()
 {
     window_zoom_ = 1.0;
-    window_pan_x_ += 0.0;
-    window_pan_y_ += 0.0;
+    window_pan_x_ = 0.0;
+    window_pan_y_ = 0.0;
 }
 
 static void key_callback(GLFWwindow *window, int key, int scancode, int action,
@@ -79,7 +79,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action,
             window_pan(0, -PAN_STEP);
             break;
 
-        case GLFW_KEY_SPACE:
+        case GLFW_KEY_ENTER:
             window_reset_zoom_pan();
             break;
 

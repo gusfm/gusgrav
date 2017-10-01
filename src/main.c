@@ -18,7 +18,9 @@ static int parse_args(int argc, char **argv)
                     "A:                 Render body info\n"
                     "Keyboard arrows:   Move screen\n"
                     "Mouse scroll:      Zoom in/out\n"
+                    "Left mouse btn:    Select a body\n"
                     "Right mouse btn:   Create a body\n"
+                    "Enter:             Reset zoom\n"
                     "ESQ:               Quit program\n",
                     argv[0]);
                 exit(EXIT_SUCCESS);
