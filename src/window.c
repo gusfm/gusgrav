@@ -18,6 +18,7 @@ double window_zoom_center_y_;
 double window_pan_x_;
 double window_pan_y_;
 GLFWwindow *glfw_window_;
+unsigned int arrow_pressed;
 
 static void window_error_callback(int error, const char *description)
 {
@@ -49,6 +50,7 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action,
 {
     (void)scancode;
     (void)mods;
+    int arrow_bit;
     switch (key) {
         case GLFW_KEY_ESCAPE:
         case GLFW_KEY_Q:
@@ -62,20 +64,15 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action,
                 universe_toggle_render_info();
             break;
 
-        case GLFW_KEY_LEFT:
-            window_pan(PAN_STEP, 0);
-            break;
-
         case GLFW_KEY_RIGHT:
-            window_pan(-PAN_STEP, 0);
-            break;
-
+        case GLFW_KEY_LEFT:
         case GLFW_KEY_DOWN:
-            window_pan(0, PAN_STEP);
-            break;
-
         case GLFW_KEY_UP:
-            window_pan(0, -PAN_STEP);
+            arrow_bit = 1 << (key - GLFW_KEY_RIGHT);
+            if (action == GLFW_PRESS)
+                arrow_pressed |= arrow_bit;
+            else
+                arrow_pressed &= ~(arrow_bit);
             break;
 
         case GLFW_KEY_ENTER:
@@ -84,6 +81,26 @@ static void key_callback(GLFWwindow *window, int key, int scancode, int action,
 
         default:
             break;
+    }
+}
+
+static void key_process(void)
+{
+    if (arrow_pressed) {
+        if (arrow_pressed & (1 << 0)) {
+            /* Pan right */
+            window_pan(-PAN_STEP, 0);
+        } else if (arrow_pressed & (1 << 1)) {
+            /* Pan left */
+            window_pan(PAN_STEP, 0);
+        }
+        if (arrow_pressed & (1 << 2)) {
+            /* Pan down */
+            window_pan(0, PAN_STEP);
+        } else if (arrow_pressed & (1 << 3)) {
+            /* Pan up */
+            window_pan(0, -PAN_STEP);
+        }
     }
 }
 
@@ -245,6 +262,7 @@ void window_main_loop(void)
     while (!glfwWindowShouldClose(glfw_window_)) {
         window_render();
         universe_process();
+        key_process();
         check_fps();
     }
 }
