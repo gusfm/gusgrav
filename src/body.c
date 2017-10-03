@@ -126,7 +126,7 @@ void body_merge(body_t *b1, body_t *b2)
     b1->radius = calc_radius(b1->mass);
 }
 
-static bool is_inside(body_t *b, vector_t *point)
+static bool is_point_inside(body_t *b, vector_t *point)
 {
     /* (p.x - circle.x)^2 + (p.y - circle.y)^2 < circle.radius^2 */
     double dx = (point->x - b->pos.x);
@@ -137,11 +137,13 @@ static bool is_inside(body_t *b, vector_t *point)
 
 bool body_is_inside(body_t *b1, body_t *b2)
 {
-    return is_inside(b1, &b2->pos);
+    if (b1->mass < b2->mass)
+        return false;
+    return is_point_inside(b1, &b2->pos);
 }
 
 void body_select(body_t *b, vector_t *point)
 {
-    if (is_inside(b, point))
+    if (is_point_inside(b, point))
         b->selected = !b->selected;
 }
